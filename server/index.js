@@ -68,7 +68,15 @@ function cleanFilename(name, kind) {
 
 // ---------------------------------------------------------------- public API
 
-app.use(express.static(path.join(ROOT, 'public'), { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }));
+app.use(express.static(path.join(ROOT, 'public'), {
+  extensions: ['html'],
+  maxAge: config.isProduction ? '1h' : 0,
+  // Pages, scripts and styles are re-checked on every visit (cheap, via ETag), so a browser
+  // never mixes a new page with an old script after a deploy. Images keep the 1-hour cache.
+  setHeaders(res, file) {
+    if (/\.(html|js|css)$/.test(file)) res.setHeader('Cache-Control', 'no-cache');
+  },
+}));
 
 app.get('/healthz', (_req, res) => res.json({ ok: true }));
 
