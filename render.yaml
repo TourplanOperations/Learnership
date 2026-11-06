@@ -1,0 +1,51 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: tourplan-learnership-portal
+    runtime: node
+    region: frankfurt
+    plan: starter
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "24"
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: INTAKE_YEAR
+        value: "2027"
+      - key: APPLICATIONS_OPEN_AT
+        value: "2026-11-01T00:00:00+02:00"
+      - key: APPLICATIONS_CLOSE_AT
+        value: "2027-01-08T23:59:59+02:00"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET
+        value: learnership-documents
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        value: "Tourplan Learnership <learnership.applications@tourplan.com>"
+      - key: TEAM_INBOX
+        value: Learnership.Applications@tourplan.com
+      - key: SEND_APPLICANT_CONFIRMATION
+        value: "true"
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: MAX_FILE_MB
+        value: "10"
