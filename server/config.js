@@ -47,6 +47,8 @@ export const config = {
   },
   mailFrom: env.MAIL_FROM || 'Tourplan Learnership <tourplanafrica@tourplan.africa>',
   teamInbox: env.TEAM_INBOX || 'Learnership.Applications@tourplan.com',
+  // Where applicants' replies to the confirmation email go.
+  replyTo: env.REPLY_TO || env.TEAM_INBOX || 'Learnership.Applications@tourplan.com',
   sendApplicantConfirmation: bool(env.SEND_APPLICANT_CONFIRMATION, true),
 
   // Admin review page.

@@ -39,6 +39,8 @@ services:
         value: "Tourplan Learnership <tourplanafrica@tourplan.africa>"
       - key: TEAM_INBOX
         value: Learnership.Applications@tourplan.com
+      - key: REPLY_TO
+        value: Learnership.Applications@tourplan.com
       - key: SEND_APPLICANT_CONFIRMATION
         value: "true"
       - key: ADMIN_PASSWORD

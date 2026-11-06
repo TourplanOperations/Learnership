@@ -92,7 +92,7 @@ export async function sendApplicantConfirmation(app) {
 
   return send({
     to: app.email,
-    replyTo: config.teamInbox,
+    replyTo: config.replyTo,
     subject: `We have received your Tourplan Learnership application (${app.reference})`,
     html,
     text: `Dear ${app.first_name},\n\nThank you for applying for the Tourplan Learnership ${app.intake_year}. Your reference number is ${app.reference}.\n\nShortlisted applicants will be contacted after applications close on ${formatDate(config.closesAt)}.\n\nKind regards,\nThe Tourplan Learnership team`,
