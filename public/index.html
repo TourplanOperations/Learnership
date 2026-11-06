@@ -29,7 +29,7 @@
         <div>
           <p class="eyebrow">Learnership 2027 · Boksburg, Gauteng</p>
           <h1 class="hero-title">Building the future of tourism in South Africa</h1>
-          <p class="hero-lead">A nine-month paid learnership for unemployed graduates who want to start a career in travel technology. Learn Tourplan's tourism software, build professional skills, and work alongside our team.</p>
+          <p class="hero-lead">A nine-month paid learnership for unemployed graduates who want to start a career in travel technology. Learn Tourplan's tourism software, build professional skills, and work alongside our team. Applications are open only to people with a valid South African ID.</p>
           <div class="hero-actions">
             <a href="#apply" class="btn btn-primary btn-lg" data-when-open>Start your application
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
@@ -114,6 +114,7 @@
           <article class="card">
             <h3 class="card-title">Who can apply</h3>
             <ul class="ticks">
+              <li>A valid South African ID (green ID book or smart ID card)</li>
               <li>Unemployed graduates</li>
               <li>An NQF 7 qualification or higher (a 3-year diploma or degree). NQF 6 will be considered if you excelled.</li>
               <li>Studied IT, Tourism or Business</li>
@@ -131,7 +132,7 @@
         <div class="apply-head">
           <p class="eyebrow">Learnership application 2027</p>
           <h2 class="section-title">Apply online</h2>
-          <p class="lead">The form takes about 15 minutes. Have these five documents ready as PDF files or clear photos: matric certificate, proof of tertiary education (or latest transcript if you are in final year), CV, ID document and proof of residence. Your answers are saved on this device as you go.</p>
+          <p class="lead">Applications are open only to people with a valid South African ID. The form takes about 15 minutes. Have these five documents ready as PDF files or clear photos: matric certificate, proof of tertiary education (or latest transcript if you are in final year), CV, ID document and proof of residence. Your answers are saved on this device as you go.</p>
         </div>
 
         <div id="closed-notice" class="card closed" hidden>
@@ -253,6 +254,11 @@
                 <input name="declaration.full_name" required maxlength="160" autocomplete="name"><span class="error"></span></label>
               <label class="field"><span class="label">Signed at (town or city)</span>
                 <input name="declaration.signed_at" required maxlength="80"><span class="error"></span></label>
+              <label class="check field">
+                <input type="checkbox" name="declaration.sa_id" required>
+                <span>I confirm that I hold a valid South African ID.</span>
+                <span class="error"></span>
+              </label>
               <label class="check field">
                 <input type="checkbox" name="declaration.declared" required>
                 <span>I, <strong id="declare-name">[your full name]</strong>, hereby declare that the above and all supporting documents are true and correct.</span>

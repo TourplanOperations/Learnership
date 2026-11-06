@@ -77,6 +77,7 @@ export const applicationSchema = z.object({
   declaration: z.object({
     full_name: text(160, 'Full name'),
     signed_at: text(80, 'Signed at'),
+    sa_id: z.literal(true, { error: 'Applications are open only to people with a valid South African ID.' }),
     declared: z.literal(true, { error: 'Please confirm the declaration.' }),
     popia_consent: z.literal(true, { error: 'Please consent to the processing of your personal information.' }),
   }),

@@ -32,7 +32,7 @@ create table if not exists public.applications (
   qualification         jsonb not null default '{}'::jsonb,
   -- { "matric": { "path": "...", "filename": "...", "kind": "pdf", "size": 12345, "summary": "..." }, ... }
   documents             jsonb not null default '{}'::jsonb,
-  -- { "full_name": "...", "signed_at": "Boksburg", "date": "2026-11-06", "declared": true, "popia_consent": true, "consented_at": "..." }
+  -- { "full_name": "...", "signed_at": "Boksburg", "date": "2026-11-06", "sa_id": true, "declared": true, "popia_consent": true, "consented_at": "..." }
   declaration           jsonb not null default '{}'::jsonb,
 
   application_pdf_path  text,

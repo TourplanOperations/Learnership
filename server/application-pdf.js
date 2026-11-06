@@ -114,6 +114,7 @@ export function buildApplicationPdf(app) {
     row('Signed at', dec.signed_at);
     row('Date', formatDate(app.created_at));
     row('Signature', `Signed electronically by ${dec.full_name} on submission`);
+    row('South African ID', dec.sa_id ? 'Confirmed holds a valid South African ID' : 'Not confirmed');
     row('POPIA consent', `Given on ${formatDate(dec.consented_at)}`);
 
     // Footer on every page

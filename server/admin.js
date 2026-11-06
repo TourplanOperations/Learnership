@@ -202,6 +202,7 @@ ${flash}${emailWarn}
 <section class="card"><h2 class="card-title">Declaration</h2><p>I, ${esc(a.declaration?.full_name)}, hereby declare that the above and all supporting documents are true and correct.</p>${dl([
       ['Signed at', esc(a.declaration?.signed_at)],
       ['Date', formatDate(a.created_at)],
+      ['South African ID', a.declaration?.sa_id ? 'Confirmed' : 'Not confirmed'],
       ['POPIA consent', a.declaration?.popia_consent ? `Given ${formatDate(a.declaration.consented_at)}` : 'Not given'],
     ])}</section>
 </div>

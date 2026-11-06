@@ -24,7 +24,7 @@ export const REQUIRED_DOCUMENTS = [
   {
     key: 'id',
     label: 'Copy of ID document',
-    hint: 'Both sides of a smart ID card, or the photo page of your green ID book or passport.',
+    hint: 'Your valid South African ID: both sides of your smart ID card, or the photo page of your green ID book.',
     accept: ['pdf', 'jpeg', 'png'],
   },
   {

@@ -136,6 +136,7 @@ function fieldError(el) {
   const v = el.type === 'checkbox' ? el.checked : el.type === 'radio' ? form.elements[el.name].value : el.value.trim();
   const label = el.closest('.field')?.querySelector('.label')?.firstChild?.textContent?.trim() || 'This field';
   if (el.required && !v) {
+    if (el.name === 'declaration.sa_id') return 'Applications are open only to people with a valid South African ID.';
     if (el.name === 'declaration.declared') return 'Please confirm the declaration.';
     if (el.name === 'declaration.popia_consent') return 'Please give consent so we can process your application.';
     return el.tagName === 'SELECT' || el.type === 'radio' ? 'Please choose an option.' : `${label} is required.`;
@@ -287,7 +288,7 @@ const SECTIONS = {
   personal: ['title', 'surname', 'first_name', 'middle_name', 'date_of_birth', 'country_of_birth'],
   contact: ['residential_address', 'city', 'province', 'postal_code', 'email', 'cell_number', 'alternative_number'],
   qualification: ['qualification.qualification', 'qualification.institution', 'qualification.field', 'qualification.nqf_level', 'qualification.status', 'qualification.year'],
-  declaration: ['declaration.full_name', 'declaration.signed_at', 'declaration.declared', 'declaration.popia_consent'],
+  declaration: ['declaration.full_name', 'declaration.signed_at', 'declaration.sa_id', 'declaration.declared', 'declaration.popia_consent'],
 };
 const SECTION_NAMES = { personal: 'personal details', contact: 'address and contact details', qualification: 'qualification', languages: 'languages', documents: 'documents', declaration: 'declaration' };
 
@@ -388,6 +389,7 @@ async function onSubmit(e) {
     declaration: {
       full_name: f['declaration.full_name'],
       signed_at: f['declaration.signed_at'],
+      sa_id: f['declaration.sa_id'],
       declared: f['declaration.declared'],
       popia_consent: f['declaration.popia_consent'],
     },
