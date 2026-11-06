@@ -33,8 +33,10 @@ services:
         sync: false
       - key: GRAPH_CLIENT_SECRET
         sync: false
+      - key: GRAPH_SENDER
+        value: tourplanafrica@tourplan.africa
       - key: MAIL_FROM
-        value: "Tourplan Learnership <learnership.applications@tourplan.com>"
+        value: "Tourplan Learnership <tourplanafrica@tourplan.africa>"
       - key: TEAM_INBOX
         value: Learnership.Applications@tourplan.com
       - key: SEND_APPLICANT_CONFIRMATION

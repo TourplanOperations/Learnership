@@ -55,12 +55,12 @@ The portal sends mail through Microsoft Graph using modern authentication (OAuth
 4. Limit the app to the sending mailbox only, so it cannot send as anyone else. In Exchange Online PowerShell, either:
    - create an application access policy:
      ```powershell
-     New-ApplicationAccessPolicy -AppId <client id> -PolicyScopeGroupId learnership.applications@tourplan.com -AccessRight RestrictAccess -Description "Learnership portal: send as learnership mailbox only"
+     New-ApplicationAccessPolicy -AppId <client id> -PolicyScopeGroupId tourplanafrica@tourplan.africa -AccessRight RestrictAccess -Description "Learnership portal: send as tourplanafrica mailbox only"
      ```
    - or use RBAC for Applications with the *Application Mail.Send* role scoped to that mailbox.
 5. Provide the **Directory (tenant) ID**, **Application (client) ID** and **client secret value**.
 
-The sending mailbox is the address in `MAIL_FROM` (learnership.applications@tourplan.com) unless `GRAPH_SENDER` is set. It must be a real mailbox or shared mailbox in the tenant. Sent messages are kept in its Sent Items.
+Emails are sent from the mailbox in `GRAPH_SENDER` (tourplanafrica@tourplan.africa), falling back to the address in `MAIL_FROM`. It must be a real user or shared mailbox in the tenant: a distribution list, Microsoft 365 group or alias gives a 404 "requested user is invalid" error. Team notifications still go to `TEAM_INBOX` (Learnership.Applications@tourplan.com), which may be a group. Sent messages are kept in the sending mailbox's Sent Items.
 
 If Microsoft 365 is not an option, the portal can send over SMTP instead (for example Resend or SendGrid with the tourplan.com domain verified). Leave the `GRAPH_*` settings blank and fill in the `SMTP_*` settings from `.env.example`.
 

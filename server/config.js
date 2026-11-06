@@ -45,7 +45,7 @@ export const config = {
     user: env.SMTP_USER || '',
     pass: env.SMTP_PASS || '',
   },
-  mailFrom: env.MAIL_FROM || 'Tourplan Learnership <learnership.applications@tourplan.com>',
+  mailFrom: env.MAIL_FROM || 'Tourplan Learnership <tourplanafrica@tourplan.africa>',
   teamInbox: env.TEAM_INBOX || 'Learnership.Applications@tourplan.com',
   sendApplicantConfirmation: bool(env.SEND_APPLICANT_CONFIRMATION, true),
 
