@@ -3,6 +3,7 @@
 
 import { z } from 'zod';
 import { DOCUMENT_KEYS } from './documents.js';
+import { idNumberError, normaliseIdNumber } from '../public/sa-id.js';
 
 export const TITLES = ['Mr', 'Ms', 'Mrs', 'Miss', 'Mx', 'Dr'];
 export const PROVINCES = [
@@ -37,6 +38,13 @@ export const applicationSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date of birth is required.')
     .refine((v) => !Number.isNaN(Date.parse(v)), 'Date of birth is not a valid date.')
     .refine((v) => age(v) >= 16 && age(v) <= 70, 'Please check your date of birth.'),
+  id_number: z
+    .string({ error: 'South African ID number is required.' })
+    .transform(normaliseIdNumber)
+    .superRefine((v, ctx) => {
+      const msg = idNumberError(v);
+      if (msg) ctx.addIssue({ code: 'custom', message: msg });
+    }),
   country_of_birth: text(80, 'Country of birth'),
   residential_address: text(300, 'Street address'),
   city: text(80, 'Town or city'),
@@ -87,6 +95,11 @@ export const applicationSchema = z.object({
 
   // Honeypot: real people never see or fill this field.
   website: z.string().max(0).optional(),
+}).superRefine((a, ctx) => {
+  // Runs once every field is valid: the ID number's first six digits must match the date of birth.
+  if (idNumberError(a.id_number)) return; // already reported on the field itself
+  const msg = idNumberError(a.id_number, a.date_of_birth);
+  if (msg) ctx.addIssue({ code: 'custom', path: ['id_number'], message: msg });
 });
 
 export function formatIssues(error) {

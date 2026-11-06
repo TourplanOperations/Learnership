@@ -156,6 +156,12 @@ app.post('/api/applications', submitLimiter, express.json({ limit: '64kb' }), as
         issues: [{ path: 'email', message: 'An application with this email address already exists.' }],
       });
     }
+    if (await store.idNumberExists(form.id_number, config.intakeYear)) {
+      return res.status(409).json({
+        error: `An application has already been submitted with this ID number. If you need to update it, please email ${config.teamInbox}.`,
+        issues: [{ path: 'id_number', message: 'An application with this ID number already exists.' }],
+      });
+    }
 
     const reference = newReference();
     const documents = {};
@@ -179,7 +185,7 @@ app.post('/api/applications', submitLimiter, express.json({ limit: '64kb' }), as
     finaliseApplication(saved).catch((e) => console.error(`Finalising ${reference} failed:`, e));
   } catch (e) {
     if (e instanceof DuplicateApplicationError) {
-      return res.status(409).json({ error: `An application has already been submitted with this email address. If you need to update it, please email ${config.teamInbox}.` });
+      return res.status(409).json({ error: `An application has already been submitted with this email address or ID number. If you need to update it, please email ${config.teamInbox}.` });
     }
     console.error('Submitting application failed:', e);
     res.status(500).json({ error: 'Something went wrong while saving your application. Your documents are still attached; please try submitting again in a few minutes.' });

@@ -18,6 +18,7 @@ create table if not exists public.applications (
   middle_name           text,
   date_of_birth         date not null,
   country_of_birth      text not null,
+  id_number             text,           -- South African ID number (13 digits)
   residential_address   text not null,
   city                  text not null,
   province              text not null,
@@ -42,9 +43,15 @@ create table if not exists public.applications (
   admin_notes           text
 );
 
+-- Added after the first release; safe to re-run on an existing table.
+alter table public.applications add column if not exists id_number text;
+
 -- One application per email address per intake.
 create unique index if not exists applications_intake_email_key
   on public.applications (intake_year, lower(email));
+-- One application per South African ID number per intake.
+create unique index if not exists applications_intake_id_number_key
+  on public.applications (intake_year, id_number) where id_number is not null;
 create index if not exists applications_created_at_idx on public.applications (created_at desc);
 
 -- Lock the table down: only the server (service role key) can read or write.

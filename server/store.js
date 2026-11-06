@@ -59,6 +59,15 @@ function supabaseStore() {
       if (error) throw new Error(`Duplicate check: ${error.message}`);
       return count > 0;
     },
+    async idNumberExists(idNumber, intakeYear) {
+      const { count, error } = await sb
+        .from('applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('intake_year', intakeYear)
+        .eq('id_number', idNumber);
+      if (error) throw new Error(`Duplicate check: ${error.message}`);
+      return count > 0;
+    },
     async insertApplication(row) {
       const { data, error } = await sb.from('applications').insert(row).select().single();
       if (error?.code === '23505') throw new DuplicateApplicationError('duplicate');
@@ -138,6 +147,9 @@ function localStore() {
 
     async emailExists(email, intakeYear) {
       return (await readDb()).some((r) => r.intake_year === intakeYear && r.email.toLowerCase() === email.toLowerCase());
+    },
+    async idNumberExists(idNumber, intakeYear) {
+      return (await readDb()).some((r) => r.intake_year === intakeYear && r.id_number === idNumber);
     },
     async insertApplication(row) {
       const rows = await readDb();

@@ -113,7 +113,7 @@ adminRouter.get('/', requireAdmin, async (req, res, next) => {
     const rows = all.filter(
       (a) =>
         (!status || a.status === status) &&
-        (!search || [a.surname, a.first_name, a.email, a.reference].some((v) => (v || '').toLowerCase().includes(search.toLowerCase()))),
+        (!search || [a.surname, a.first_name, a.email, a.reference, a.id_number].some((v) => (v || '').toLowerCase().includes(search.toLowerCase()))),
     );
     const counts = Object.fromEntries(Object.keys(STATUSES).map((s) => [s, all.filter((a) => a.status === s).length]));
     const nqf7 = all.filter((a) => Number(a.qualification?.nqf_level) >= 7).length;
@@ -125,7 +125,7 @@ adminRouter.get('/', requireAdmin, async (req, res, next) => {
 <div class="kpi"><span class="label">Shortlisted</span><span class="kpi-value">${counts.shortlisted + counts.interview + counts.offered}</span><span class="meta">Incl. interview and offered</span></div></div>`;
 
     const filter = `<form class="filters" method="get" action="/admin">
-<label class="field inline"><span class="label">Search</span><input type="search" name="q" value="${esc(search)}" placeholder="Name, email or reference"></label>
+<label class="field inline"><span class="label">Search</span><input type="search" name="q" value="${esc(search)}" placeholder="Name, email, reference or ID number"></label>
 <label class="field inline"><span class="label">Status</span><select name="status"><option value="">All statuses</option>${Object.entries(STATUSES)
       .map(([k, v]) => `<option value="${k}"${k === status ? ' selected' : ''}>${v} (${counts[k]})</option>`)
       .join('')}</select></label>
@@ -183,6 +183,7 @@ ${flash}${emailWarn}
 <section class="card"><h2 class="card-title">Personal details</h2>${dl([
       ['Date of birth', formatDate(a.date_of_birth)],
       ['Country of birth', esc(a.country_of_birth)],
+      ['SA ID number', esc(a.id_number)],
       ['Address', [a.residential_address, a.city, a.province, a.postal_code].map(esc).join('<br>')],
       ['Email', `<a href="mailto:${esc(a.email)}">${esc(a.email)}</a>`],
       ['Cell number', esc(a.cell_number)],

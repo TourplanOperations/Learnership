@@ -1,5 +1,7 @@
 // Tourplan Learnership application form.
 
+import { idNumberError, normaliseIdNumber } from './sa-id.js';
+
 const DRAFT_KEY = 'tp-learnership-draft-v1';
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -145,6 +147,7 @@ function fieldError(el) {
   if (el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Please enter a valid email address.';
   if (el.type === 'tel' && (!PHONE.test(v) || v.replace(/\D/g, '').length < 9)) return 'Please enter a valid phone number.';
   if (el.name === 'qualification.year' && (+v < 1990 || +v > 2027)) return 'Please enter a year between 1990 and 2027.';
+  if (el.name === 'id_number') return idNumberError(v, form.elements.date_of_birth.value);
   if (el.name === 'date_of_birth') {
     const age = (Date.now() - Date.parse(v)) / (365.25 * 864e5);
     if (Number.isNaN(age) || age < 16 || age > 70) return 'Please check your date of birth.';
@@ -285,7 +288,7 @@ async function uploadDocument(doc, li, file) {
 // ---------------------------------------------------------------- progress + submit gating
 
 const SECTIONS = {
-  personal: ['title', 'surname', 'first_name', 'middle_name', 'date_of_birth', 'country_of_birth'],
+  personal: ['title', 'surname', 'first_name', 'middle_name', 'date_of_birth', 'country_of_birth', 'id_number'],
   contact: ['residential_address', 'city', 'province', 'postal_code', 'email', 'cell_number', 'alternative_number'],
   qualification: ['qualification.qualification', 'qualification.institution', 'qualification.field', 'qualification.nqf_level', 'qualification.status', 'qualification.year'],
   declaration: ['declaration.full_name', 'declaration.signed_at', 'declaration.sa_id', 'declaration.declared', 'declaration.popia_consent'],
@@ -369,6 +372,7 @@ async function onSubmit(e) {
     first_name: f.first_name,
     middle_name: f.middle_name,
     date_of_birth: f.date_of_birth,
+    id_number: normaliseIdNumber(f.id_number),
     country_of_birth: f.country_of_birth,
     residential_address: f.residential_address,
     city: f.city,

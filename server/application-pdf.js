@@ -71,6 +71,7 @@ export function buildApplicationPdf(app) {
     row('Middle name', app.middle_name);
     row('Date of birth', formatDate(app.date_of_birth));
     row('Country of birth', app.country_of_birth);
+    row('SA ID number', app.id_number);
     row('Residential address', [app.residential_address, app.city, app.province, app.postal_code].filter(Boolean).join('\n'));
     row('Email address', app.email);
     row('Cell number', app.cell_number);
