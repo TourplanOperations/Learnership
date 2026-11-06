@@ -12,7 +12,7 @@ On submission the application is stored in Supabase, a PDF of the completed form
 | Web server and API | `server/index.js` (Node.js 22+, Express) |
 | Document readability checks | `server/validate-doc.js` |
 | Completed-form PDF | `server/application-pdf.js` |
-| Emails | `server/mail.js` (SMTP) |
+| Emails | `server/mail.js`, `server/graph-mail.js` (Microsoft Graph, or SMTP) |
 | Admin review pages | `server/admin.js` |
 | Database and file storage | `server/store.js`, schema in `supabase/schema.sql` |
 | Hosting | `render.yaml` (Render Blueprint) |
@@ -45,14 +45,24 @@ The checks confirm a document is legible, not that it is the right document. The
 2. Open **SQL Editor**, paste in `supabase/schema.sql` and run it. This creates the `applications` table and the private `learnership-documents` bucket.
 3. From **Project Settings > API**, copy the **Project URL** and the **service_role** key. The service role key is a secret: only put it in Render, never in the page code.
 
-### 2. Email (SMTP)
+### 2. Email (Microsoft 365 via Microsoft Graph)
 
-The portal sends mail over SMTP. Pick one option:
+The portal sends mail through Microsoft Graph using modern authentication (OAuth client credentials). No mailbox password is stored. Ask IT to:
 
-- **Microsoft 365**: use a mailbox such as `learnership.applications@tourplan.com` with Authenticated SMTP enabled for it (Microsoft 365 admin centre > user > Mail > Manage email apps). Host `smtp.office365.com`, port `587`, `SMTP_SECURE=false`, and that mailbox's username and password (or an app password).
-- **Resend or SendGrid**: create an API key, verify the `tourplan.com` sending domain (DNS records added by IT), then use the SMTP settings in `.env.example`.
+1. In **Microsoft Entra admin centre > App registrations**, register an app such as *Tourplan Learnership Portal* (single tenant, no redirect URI).
+2. Under **API permissions**, add **Microsoft Graph > Application permissions > Mail.Send** and grant admin consent.
+3. Under **Certificates & secrets**, create a client secret and note its expiry date. Email stops when it expires, so diarise renewing it.
+4. Limit the app to the sending mailbox only, so it cannot send as anyone else. In Exchange Online PowerShell, either:
+   - create an application access policy:
+     ```powershell
+     New-ApplicationAccessPolicy -AppId <client id> -PolicyScopeGroupId learnership.applications@tourplan.com -AccessRight RestrictAccess -Description "Learnership portal: send as learnership mailbox only"
+     ```
+   - or use RBAC for Applications with the *Application Mail.Send* role scoped to that mailbox.
+5. Provide the **Directory (tenant) ID**, **Application (client) ID** and **client secret value**.
 
-`MAIL_FROM` must be an address the mail service is allowed to send as.
+The sending mailbox is the address in `MAIL_FROM` (learnership.applications@tourplan.com) unless `GRAPH_SENDER` is set. It must be a real mailbox or shared mailbox in the tenant. Sent messages are kept in its Sent Items.
+
+If Microsoft 365 is not an option, the portal can send over SMTP instead (for example Resend or SendGrid with the tourplan.com domain verified). Leave the `GRAPH_*` settings blank and fill in the `SMTP_*` settings from `.env.example`.
 
 ### 3. GitHub and Render
 
@@ -61,12 +71,12 @@ The portal sends mail over SMTP. Pick one option:
 3. Fill in the environment variables Render asks for:
    - `PUBLIC_BASE_URL`: the service URL, for example `https://tourplan-learnership-portal.onrender.com`, or a custom domain such as `https://learnership.tourplan.com`
    - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
-   - `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`
+   - `GRAPH_TENANT_ID`, `GRAPH_CLIENT_ID`, `GRAPH_CLIENT_SECRET`
    - `ADMIN_PASSWORD`: a strong password shared with the Learnership selection team
    - `SESSION_SECRET` is generated automatically.
 4. Optionally add a custom domain under the service's **Settings > Custom Domains** and update `PUBLIC_BASE_URL`.
 
-In production the server refuses to start if Supabase, SMTP, the admin password or the session secret is missing.
+In production the server refuses to start if Supabase, email (Graph or SMTP), the admin password or the session secret is missing.
 
 ### 4. Check it
 
@@ -78,12 +88,12 @@ In production the server refuses to start if Supabase, SMTP, the admin password 
 
 ```bash
 npm install
-cp .env.example .env   # set ADMIN_PASSWORD; leave Supabase and SMTP blank
+cp .env.example .env   # set ADMIN_PASSWORD; leave Supabase and email blank
 npm run dev            # http://localhost:3000
 npm test               # document-check tests
 ```
 
-Without Supabase and SMTP settings, applications are saved to `local-data/` and emails are written to `local-data/outbox/` as `.eml` files, so nothing leaves your machine.
+Without Supabase and email settings, applications are saved to `local-data/` and emails are written to `local-data/outbox/` as `.eml` files, so nothing leaves your machine.
 
 ## Changing things for the next intake
 

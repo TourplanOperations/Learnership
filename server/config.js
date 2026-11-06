@@ -28,8 +28,16 @@ export const config = {
   supabaseServiceKey: env.SUPABASE_SERVICE_ROLE_KEY || '',
   storageBucket: env.SUPABASE_BUCKET || 'learnership-documents',
 
-  // Email (SMTP). Works with Microsoft 365, Resend, SendGrid, etc.
-  // When SMTP_HOST is not set, emails are written to ./local-data/outbox as .eml files.
+  // Email. Preferred: Microsoft Graph (Microsoft 365 with modern authentication), used
+  // when the three GRAPH_* settings are present. Otherwise SMTP (Resend, SendGrid, ...).
+  // With neither, emails are written to ./local-data/outbox as .eml files.
+  graph: {
+    tenantId: env.GRAPH_TENANT_ID || '',
+    clientId: env.GRAPH_CLIENT_ID || '',
+    clientSecret: env.GRAPH_CLIENT_SECRET || '',
+    // Mailbox the app sends as; defaults to the address in MAIL_FROM.
+    sender: env.GRAPH_SENDER || '',
+  },
   smtp: {
     host: env.SMTP_HOST || '',
     port: Number(env.SMTP_PORT || 587),
@@ -50,7 +58,9 @@ export const config = {
 };
 
 export const usingSupabase = Boolean(config.supabaseUrl && config.supabaseServiceKey);
-export const usingSmtp = Boolean(config.smtp.host);
+export const usingGraph = Boolean(config.graph.tenantId && config.graph.clientId && config.graph.clientSecret);
+export const usingSmtp = !usingGraph && Boolean(config.smtp.host);
+export const mailMode = usingGraph ? 'graph' : usingSmtp ? 'smtp' : 'local';
 
 export function applicationWindow(now = new Date()) {
   if (now < config.opensAt) return 'not_open';
@@ -61,7 +71,7 @@ export function applicationWindow(now = new Date()) {
 if (config.isProduction) {
   const missing = [];
   if (!usingSupabase) missing.push('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY');
-  if (!usingSmtp) missing.push('SMTP_HOST');
+  if (mailMode === 'local') missing.push('GRAPH_TENANT_ID / GRAPH_CLIENT_ID / GRAPH_CLIENT_SECRET (or SMTP_HOST)');
   if (!config.adminPassword) missing.push('ADMIN_PASSWORD');
   if (config.sessionSecret === 'dev-only-secret-change-me') missing.push('SESSION_SECRET');
   if (missing.length) {

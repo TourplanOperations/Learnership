@@ -27,15 +27,11 @@ services:
         sync: false
       - key: SUPABASE_BUCKET
         value: learnership-documents
-      - key: SMTP_HOST
+      - key: GRAPH_TENANT_ID
         sync: false
-      - key: SMTP_PORT
-        value: "587"
-      - key: SMTP_SECURE
-        value: "false"
-      - key: SMTP_USER
+      - key: GRAPH_CLIENT_ID
         sync: false
-      - key: SMTP_PASS
+      - key: GRAPH_CLIENT_SECRET
         sync: false
       - key: MAIL_FROM
         value: "Tourplan Learnership <learnership.applications@tourplan.com>"

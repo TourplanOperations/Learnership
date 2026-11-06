@@ -1,17 +1,22 @@
-// Outgoing email. Uses SMTP when configured (Microsoft 365, Resend, SendGrid, ...);
-// otherwise writes .eml files to ./local-data/outbox for local testing.
+// Outgoing email. Uses Microsoft Graph when configured (Microsoft 365, modern authentication),
+// else SMTP (Resend, SendGrid, ...), else writes .eml files to ./local-data/outbox for local testing.
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { PROJECT_ROOT } from './config.js';
 import nodemailer from 'nodemailer';
-import { config, usingSmtp } from './config.js';
+import { config, mailMode } from './config.js';
+import { createGraphSender, addressOf } from './graph-mail.js';
 import { REQUIRED_DOCUMENTS } from './documents.js';
 import { formatDate } from './application-pdf.js';
 
 const OUTBOX = path.join(PROJECT_ROOT, 'local-data', 'outbox');
 
-const transport = usingSmtp
+const graphSend = mailMode === 'graph'
+  ? createGraphSender({ ...config.graph, sender: config.graph.sender || addressOf(config.mailFrom) })
+  : null;
+
+const transport = mailMode === 'smtp'
   ? nodemailer.createTransport({
       host: config.smtp.host,
       port: config.smtp.port,
@@ -21,12 +26,13 @@ const transport = usingSmtp
   : nodemailer.createTransport({ streamTransport: true, buffer: true, newline: 'unix' });
 
 async function send(message) {
+  if (graphSend) return graphSend(message);
   const info = await transport.sendMail({ from: config.mailFrom, ...message });
-  if (!usingSmtp) {
+  if (mailMode === 'local') {
     await fs.mkdir(OUTBOX, { recursive: true });
     const file = path.join(OUTBOX, `${Date.now()}-${message.to.split('@')[0].replace(/\W/g, '')}.eml`);
     await fs.writeFile(file, info.message);
-    console.log(`[mail] SMTP not configured; wrote ${path.relative(PROJECT_ROOT, file)}`);
+    console.log(`[mail] email not configured; wrote ${path.relative(PROJECT_ROOT, file)}`);
   }
   return info;
 }

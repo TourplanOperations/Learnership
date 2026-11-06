@@ -5,7 +5,7 @@ import express from 'express';
 import multer from 'multer';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { config, usingSupabase, usingSmtp, applicationWindow } from './config.js';
+import { config, usingSupabase, mailMode, applicationWindow } from './config.js';
 import { REQUIRED_DOCUMENTS, documentByKey, EXTENSIONS, MIME_TYPES } from './documents.js';
 import { validateDocument } from './validate-doc.js';
 import { applicationSchema, formatIssues, TITLES, PROVINCES, FIELDS_OF_STUDY, NQF_LEVELS, STUDY_STATUS } from './application-schema.js';
@@ -240,7 +240,7 @@ cleanup();
 app.listen(config.port, () => {
   console.log(`Learnership portal on ${config.publicBaseUrl} (port ${config.port})`);
   console.log(`  storage: ${usingSupabase ? 'Supabase' : 'LOCAL ./local-data (development)'}`);
-  console.log(`  email:   ${usingSmtp ? `SMTP ${config.smtp.host}` : 'LOCAL ./local-data/outbox (development)'}`);
+  console.log(`  email:   ${mailMode === 'graph' ? `Microsoft Graph as ${config.graph.sender || config.mailFrom}` : mailMode === 'smtp' ? `SMTP ${config.smtp.host}` : 'LOCAL ./local-data/outbox (development)'}`);
   console.log(`  window:  ${applicationWindow()} (closes ${config.closesAt.toISOString()})`);
   if (!config.adminPassword) console.log('  admin:   ADMIN_PASSWORD not set; admin pages disabled');
 });
